@@ -1,0 +1,7 @@
+name: GameCore
+author: DaanSander
+main: com.daansander.gamecore.GameCore
+version: 1.0
+commands:
+  joingame:
+    description: Joins a game
