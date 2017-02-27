@@ -155,13 +155,13 @@ public abstract class Game {
         new BukkitRunnable() {
             @Override
             public void run() {
-            	Bukkit.broadcastMessage("lobbytimer");
                 if (gameState != GameState.WAITING) return;
                 if (players.size() >= MIN_PLAYES) {
                     currentLobbyTime--;
                     Bukkit.broadcastMessage(currentLobbyTime + "");
                     if (currentLobbyTime <= 0) {
                         onStart();
+                        currentLobbyTime = 15;
                         cancel();
                     }
                 } else
@@ -228,10 +228,44 @@ public abstract class Game {
      * Event that is called when the {@link Game} timer has started
      */
     protected void onStart() {
-    	gameState = GameState.INGAME;
-        startGameTimer(GAME_DURATION);
-        Bukkit.getPluginManager().callEvent(new GameStartEvent(this));
-    } 
+		gameState = GameState.INGAME;
+    	startGameTimer(GAME_DURATION);
+    	Bukkit.getPluginManager().callEvent(new GameStartEvent(this));
+    	
+    }
+    
+    /**
+     * Event that is called when the {@link Game} countdown timer starts
+     */
+    protected void onCountdownStart() {
+    	gameState = GameState.STARTING;
+    	
+    	new BukkitRunnable() {
+    		
+    		int currentTimer = 4;
+    		
+			@Override
+			public void run() {
+				currentTimer--;
+				
+				onCountdown(currentTimer);
+				
+				if(currentTimer <= 1) {
+					onStart();
+		        	cancel();
+				}
+			}
+		}.runTaskTimerAsynchronously(PLUGIN, 0, 20);
+    }
+    
+    /**
+     * Event that is called when the {@link Game} countdown goes a second down
+     * 
+     * @param currentTime the second the countdown is currently at
+     */
+    protected void onCountdown(int currentTime) {
+    	
+    }
 
     /**
      * Event that is called every second while the game timer is running
@@ -277,7 +311,17 @@ public abstract class Game {
 		return gameState;
 	}
 
+    /**
+     * An enum that defines the state wich the {@link Game} object is currently in
+     * 
+     * @author Daan Meijer
+     * @since 1.0
+     * 
+     * {@link GameState#INGAME} means that the {@link Game} is currently ingame
+     * {@link GameState#WAITING} means that the {@link Game} is waiting for {@link Player}'s to start
+     * {@link GameState#STARTING} means that the {@link Game} is counting down to start
+     */
     public enum GameState {
-        INGAME, WAITING
+        INGAME, WAITING, STARTING
     }
 }

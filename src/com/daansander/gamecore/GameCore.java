@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author Daan Meijer
- * @version 1.0
+ * @version 1.1
  */
 public class GameCore extends JavaPlugin {
 
